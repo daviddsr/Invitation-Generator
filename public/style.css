@@ -24,6 +24,29 @@ header h2 {
     color: #999;
 }
 
+.title_event_show {
+    font-size: 40px
+}
+
+.description_event_show {
+    font-size: 20px
+}
+
+.description_txt {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#description_event_section {
+    width: 600px;
+    border: 2px solid #ddd;
+}
+
+.date_txt {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
 #main {
     margin: 0 0 20px;
 }

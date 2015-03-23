@@ -66,3 +66,8 @@ post '/' do
 
   redirect '/'
 end
+
+get '/:id' do
+  @event = Event.get params[:id]
+  erb :event
+end
