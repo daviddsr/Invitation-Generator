@@ -1,0 +1,19 @@
+<section id="add">
+	<form action='/' method='post'>
+		<textarea class="title_event" name='title' placeholder="Your new event&hellip;"></textarea>
+		<textarea class="description_event" name='description' placeholder="Your event description&hellip;"></textarea>
+		<p class="date_txt">Your event date is: <p><input type='date' class="datetime_picker" name="date_event">
+		<textarea name='users_invited' class="people_invited" placeholder="People you want to invite&hellip;"></textarea>
+		<input type='submit' value='Generate Invitation'>
+	</form>
+</section>
+
+<% @events.each do |event| %>
+	<article>
+		<p>
+			<%= event.title %>
+			<span><%= event.description%></span>
+		</p>
+		<p class="meta">Created: <%= event.created_at %></p>
+	</article>
+<% end %>
