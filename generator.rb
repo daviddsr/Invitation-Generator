@@ -2,6 +2,7 @@ require 'sinatra'
 require 'data_mapper'
 require 'uuid'
 require 'shotgun'
+require 'pony'
 DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/generator.db")
 
 class Event
@@ -44,7 +45,7 @@ end
 
 def create_invitations(event)
   puts params[:users_invited]
-  params[:users_invited].split(',').each do |guest|
+  params[:users_invited].split(',').map do |guest|
     puts guest
     invitation = Invitation.create
     invitation.email = guest
@@ -53,6 +54,7 @@ def create_invitations(event)
     invitation.updated_at = Time.now
     invitation.event = event
     invitation.save
+    invitation
   end
 end
 
@@ -62,15 +64,29 @@ get '/' do
 end
 
 post '/' do
-  create_event
-
+  create_event.each do |invitation|
+  Pony.mail({:to => invitation.email,
+            :from => "daviddsrperiodismo@gmail",
+            :subject => 'Confirm your invitation',
+            :body => "Confirm your invitation at #{request.url}confirm/#{invitation.code}",
+            :via => :smtp,
+            :via_options => {
+              :address              => 'smtp.gmail.com',
+              :port                 => '587',
+              :enable_starttls_auto => true,
+              :user_name            => 'daviddsrperiodismo',
+              :password             => '20041990',
+              :authentication       => :plain, # :plain, :login, :cram_md5, no auth by default
+              :domain               => "localhost" # the HELO domain provided by the client to the server
+            }})
+  end
   redirect '/'
 end
 
 get '/event/:id' do
   @event = Event.get params[:id]
   @confirmed = @event.invitations.count(:answer=>true)
-  p @confirmed
+  @rejected = @event.invitations.count(:answer=>false)
   erb :event
 end
 
@@ -85,5 +101,4 @@ put '/:code' do
   p params[:answer]
   invitation.answer = params[:answer] == "Yes"
   invitation.save
-
 end
