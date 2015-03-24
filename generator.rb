@@ -19,7 +19,7 @@ end
 class Invitation
   include DataMapper::Resource
   property :id, Serial
-  property :url, Text
+  property :code, Text
   property :answer, Boolean, :default => false
   property :email, Text
   property :created_at, DateTime
@@ -46,9 +46,9 @@ def create_invitations(event)
   puts params[:users_invited]
   params[:users_invited].split(',').each do |guest|
     puts guest
-    invitation = Invitation.new
-    invitation.url = "/#{event.id}/#{guest}"
+    invitation = Invitation.create
     invitation.email = guest
+    invitation.code = ('a'..'z').to_a.sample(4).join
     invitation.created_at = Time.now
     invitation.updated_at = Time.now
     invitation.event = event
@@ -67,7 +67,23 @@ post '/' do
   redirect '/'
 end
 
-get '/:id' do
+get '/event/:id' do
   @event = Event.get params[:id]
+  @confirmed = @event.invitations.count(:answer=>true)
+  p @confirmed
   erb :event
+end
+
+get '/confirm/:code' do
+  invitation = Invitation.first(:code => params[:code]) 
+  @event = Event.get invitation.event_id
+  erb :invitation
+end
+
+put '/:code' do
+  invitation = Invitation.first(:code => params[:code]) 
+  p params[:answer]
+  invitation.answer = params[:answer] == "Yes"
+  invitation.save
+
 end
