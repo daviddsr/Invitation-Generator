@@ -1,13 +1,15 @@
 <section id="add">
 	<form action='/' method='post'>
-		<textarea class="title_event" name='title' placeholder="Your new event&hellip;"></textarea>
-		<textarea class="description_event" name='description' placeholder="Your event description&hellip;"></textarea>
-		<p class="date_txt">Your event date is: <p><input type='date' class="datetime_picker" name="date_event">
-		<textarea name='users_invited' class="people_invited" placeholder="People you want to invite&hellip;"></textarea>
-		<input type='submit' value='Generate Invitation'>
+		<textarea class="title_event" name='title' placeholder="Title of your event&hellip;"></textarea>
+		<textarea class="description_event" name='description' placeholder="Description of your event&hellip;"></textarea>
+		<p class="date_txt">Your event date is: </p><input type='date' class="datetime_picker" name="date_event">
+		<textarea name='users_invited' class="people_invited" placeholder="People you want to invite...i.e. example@example.com,&hellip;"></textarea>
+		<input type='submit' class="submit_button" value='Generate Invitation'>
 	</form>
 </section>
 
+<section id="display_events">
+	<h1 class="my_events_txt">My events</h1>
 <% @events.each do |event| %>
 	<article>
 		<p>
@@ -17,3 +19,4 @@
 		<p class="meta">Created: <%= event.created_at %></p>
 	</article>
 <% end %>
+</section>
