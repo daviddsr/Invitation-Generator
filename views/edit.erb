@@ -1,0 +1,10 @@
+<% if @event %>
+<form action="/<%= @event.id %>" method="post">
+	<input type="hidden" name="_method" value="put">
+	<textarea class="title_event" name='title'><%= @event.title %></textarea>
+	<textarea class="description_event" name='description'><%= @event.description %></textarea>
+	<p class="date_txt">Your event date is: </p><input type='date' class="datetime_picker" value="<%= @event.date %>" name="date_event">
+	<textarea name='users_invited' class="people_invited"><%= @emails_array %></textarea> 
+	<input type='submit' class="submit_button" value='Generate Invitation'>
+</form>
+<% end %>

@@ -85,6 +85,21 @@ post '/' do
   redirect '/'
 end
 
+get '/:id' do
+  @event = Event.get params[:id]
+  @emails_array = []
+  @event.invitations.each do |invitation|
+    @emails_array << invitation.email
+  end
+  p @emails_array
+  #invitations = Invitation.all params(:event_id => params[:id])
+  erb :edit
+end
+
+put '/:id' do
+  event = Event.get params[:id]
+end
+
 get '/event/:id' do
   @event = Event.get params[:id]
   @confirmed = @event.invitations.count(:answer=>true)
