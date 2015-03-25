@@ -13,7 +13,6 @@ class Event
 	property :description, Text#, :required => true
   property :created_at, DateTime
   property :updated_at, DateTime
-  # property :invitation, Text
   has n, :invitations
 end
 
@@ -44,7 +43,6 @@ def create_event
 end
 
 def create_invitations(event)
-  puts params[:users_invited]
   params[:users_invited].split(',').map do |guest|
     puts guest
     invitation = Invitation.create
@@ -58,12 +56,7 @@ def create_invitations(event)
   end
 end
 
-get '/' do
-  @events = Event.all :order => :id.desc
-  erb :home
-end
-
-post '/' do
+def send_emails
   create_event.each do |invitation|
   Pony.mail({:to => invitation.email,
             :from => "daviddsrperiodismo@gmail",
@@ -80,6 +73,15 @@ post '/' do
               :domain               => "localhost" # the HELO domain provided by the client to the server
             }})
   end
+end
+
+get '/' do
+  @events = Event.all :order => :id.desc
+  erb :home
+end
+
+post '/' do
+  send_emails
   redirect '/'
 end
 
