@@ -1,6 +1,6 @@
 <% if @event %>
 <section id="add">
-	<form action="/edit/<%= @event.id %>" method="post">
+	<form action="/edit/event/<%= @event.id %>" method="post">
 		<input type="hidden" name="_method" value="put"> 
 		<textarea class="title_event" name='title'><%= @event.title %></textarea>
 		<textarea class="description_event" name='description'><%= @event.description %></textarea>

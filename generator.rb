@@ -36,50 +36,6 @@ end
 
 DataMapper.finalize.auto_upgrade!
 
-# def create_event
-#   event = Event.new
-#   event.title = params[:title]
-#   event.description = params[:description]
-#   # event.date = params[:date_event]
-#   event.date = Time.now
-#   event.created_at = Time.now
-#   event.updated_at = Time.now
-#   event.save
-#   create_invitations(event)
-# end
-
-# def create_invitations(event)
-#   params[:users_invited].split(',').map do |guest|
-#     invitation = Invitation.create
-#     invitation.email = guest
-#     invitation.code = ('a'..'z').to_a.sample(4).join
-#     invitation.created_at = Time.now
-#     invitation.updated_at = Time.now
-#     invitation.event = event
-#     invitation.save
-#     invitation
-#   end
-# end
-
-# def send_emails
-#   create_event.each do |invitation|
-#   Pony.mail({:to => invitation.email,
-#             :from => "daviddsrperiodismo@gmail",
-#             :subject => 'Confirm your invitation',
-#             :body => "Confirm your invitation at #{request.url}confirm/#{invitation.code}",
-#             :via => :smtp,
-#             :via_options => {
-#               :address              => 'smtp.gmail.com',
-#               :port                 => '587',
-#               :enable_starttls_auto => true,
-#               :user_name            => 'daviddsrperiodismo',
-#               :password             => '20041990',
-#               :authentication       => :plain, # :plain, :login, :cram_md5, no auth by default
-#               :domain               => "localhost" # the HELO domain provided by the client to the server
-#             }})
-#   end
-# end
-
 get '/' do
   @events = Event.all :order => :id.desc
   erb :home
@@ -103,50 +59,21 @@ get '/edit/event/:id' do
   erb :edit
 end
 
-put '/edit/:id' do
-  
+put '/edit/event/:id' do
+  url = URI.join(request.url, "/").to_s
+  event = Event.get params[:id]
 
-  
-  # event = Event.get params[:id]
-  # event.title = params[:title]
-  # event.description = params[:description]
-  # event.date = params[:date_event]
-  # event.updated_at = Time.now
-  # event.save
-  # emails_already_invited = event.invitations.map { |invitation| invitation.email}
-  # p event.invitations
-  # p emails_already_invited
-  # params[:users_invited].split(',').map do |guest|
-  #   p guest
-  #   unless emails_already_invited.include?(guest)
-  #   invitation = Invitation.create
-  #   invitation.email = guest
-  #   invitation.code = ('a'..'z').to_a.sample(4).join
-  #   invitation.created_at = Time.now
-  #   invitation.updated_at = Time.now
-  #   invitation.event = event
-  #   invitation.save
-  #   invitation
-  #   Pony.mail({:to => invitation.email,
-  #           :from => "daviddsrperiodismo@gmail",
-  #           :subject => 'Confirm your invitation',
-  #           :body => "Confirm your invitation at #{request.url}confirm/#{invitation.code}",
-  #           :via => :smtp,
-  #           :via_options => {
-  #             :address              => 'smtp.gmail.com',
-  #             :port                 => '587',
-  #             :enable_starttls_auto => true,
-  #             :user_name            => 'daviddsrperiodismo',
-  #             :password             => '20041990',
-  #             :authentication       => :plain, # :plain, :login, :cram_md5, no auth by default
-  #             :domain               => "localhost" # the HELO domain provided by the client to the server
-  #           }})
-  #   end
-  # end
+  if HandleEvents.updated_invitations?(event, params[:users_invited])
+    HandleEvents.update_event(params[:id], params[:title], params[:description], params[:date_event], params[:users_invited]).each do |invitation|
+      SendInvitations.send_invitations(invitation, url)
+    end
+  else
+    HandleEvents.update_event(params[:id], params[:title], params[:description], params[:date_event], params[:users_invited])
+  end
   redirect '/'
 end
 
-get '/event/:id' do
+get '/check/event/:id' do
   @event = Event.get params[:id]
   @confirmed = @event.invitations.count(:answer=>true)
   @rejected = @event.invitations.count(:answer=>false)
@@ -167,14 +94,14 @@ delete '/delete/event/:id' do
 end
 
 get '/confirm/:code' do
-  invitation = Invitation.first(:code => params[:code]) 
+  invitation = Invitation.first(:code => params[:code])
   @event = Event.get invitation.event_id
   erb :invitation
 end
 
-put '/:code' do
+put '/confirm/invitation/:code' do
   invitation = Invitation.first(:code => params[:code]) 
-  p params[:answer]
   invitation.answer = params[:answer] == "Yes"
   invitation.save
+  redirect "/confirm/#{params[:code]}"
 end

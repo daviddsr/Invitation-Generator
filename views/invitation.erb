@@ -5,7 +5,7 @@
 </section>
 <p class="date_txt">Event Date:</p>
 <%= @event.date %>
-<form action="/<%= params[:code] %>" method='post'>
+<form action="/confirm/invitation/<%= params[:code] %>" method='post'>
 	<input type="hidden" name="_method" value="put">
 	<p>Are you going?</p>
 	<input type="radio" name="answer" value="Yes">Yes 
