@@ -9,7 +9,17 @@ require './helpers/send_invitations'
 include HandleEvents
 include SendInvitations
 
-DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/generator.db")
+
+configure :production do
+  DataMapper.setup(:default, 'postgres://enrefchlyjtvwn:C2FSUZ1BIfZF-p6h5T9KrXRsSX@ec2-107-22-249-138.compute-1.amazonaws.com:5432/d9uad9050tv9a3')
+end
+
+configure :development do
+  DataMapper.setup(:default, 'postgres://david:123456@localhost/generator')
+end
+
+#DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/generator.db")
+#DataMapper.setup(:default, 'postgres://localhost/generator')
 
 class Event
 	include DataMapper::Resource
