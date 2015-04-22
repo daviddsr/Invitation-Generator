@@ -11,11 +11,11 @@ module SendInvitations
                 :body => "Confirm your invitation at #{url}confirm/#{invitation.code}",
                 :via => :smtp,
                 :via_options => {
-                  :address              => 'smtp_address',
-                  :port                 => 'smtp_port',
+                  :address              => ENV['SMTP_ADDRESS'],
+                  :port                 => ENV['SMTP_PORT'],
                   :enable_starttls_auto => true,
-                  :user_name            => 'smtp_username',
-                  :password             => 'smtp_password',
+                  :user_name            => ENV['SMTP_USERNAME'],
+                  :password             => ENV['SMTP_PASSWORD'],
                   :authentication       => :plain, # :plain, :login, :cram_md5, no auth by default
                   :domain               => "localhost" # the HELO domain provided by the client to the server
                 }})
