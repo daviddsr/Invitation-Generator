@@ -6,6 +6,8 @@ require 'pony'
 require './helpers/handle_events'
 require './helpers/send_invitations'
 
+require './environment.rb'
+
 include HandleEvents
 include SendInvitations
 
